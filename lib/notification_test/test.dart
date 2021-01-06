@@ -8,6 +8,7 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'dart:convert';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 void main() => runApp(MyApp());
 
@@ -33,6 +34,7 @@ class NotificationTest extends StatefulWidget {
 }
 
 class _NotificationTestState extends State<NotificationTest> {
+  var amount = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +55,13 @@ class _NotificationTestState extends State<NotificationTest> {
                           right: 73,
                         ),
                         child: Text("Notification Test"))),
+                new FlatButton(
+                    onPressed: () {
+                      print("Adding one to badge");
+                      amount = amount + 1;
+                      FlutterAppBadger.updateBadgeCount(amount);
+                    },
+                    child: Text("Add to badge"))
               ],
             ),
           ],
