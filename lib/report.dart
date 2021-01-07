@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vanoli_notification/login/loginKey.dart';
+import 'checklist.dart';
+import 'infoSource.dart';
 
 void main() => runApp(new MyApp());
 
@@ -15,34 +17,38 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new Location(title: 'Report Select'),
+      home: new Report(title: 'Report Select'),
     );
   }
 }
 
-class Location extends StatefulWidget {
-  Location({Key key, this.title}) : super(key: key);
+class Report extends StatefulWidget {
+  Report({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _LocationState createState() => new _LocationState();
+  _ReportState createState() => new _ReportState();
 }
 
-class _LocationState extends State<Location> {
+class _ReportState extends State<Report> {
   TextEditingController editingController = TextEditingController();
   List<String> mainDataList = [];
   List<String> newDataList = [];
   List<Map> reportApi = [
     {
-      "bauName": "Loading",
-      "date": ["loading"],
-      "userID": "Loading"
-    }
+      "docID": "beIiSdDn3bUfGMTqHD9h",
+      "date": ["2020-12-16", "08:28:41.000Z"],
+      "userID": "ad",
+      "bauID": "406jkk1kik22t9y",
+      "bauName": "Test John Durrer"
+    },
   ];
+  InfoSource testing = InfoSource();
   var usr = "";
 
   Map bauSugg = {"bauName": "Loading"};
   var bauIDS = {};
+  /*
   Future<void> getBaustelle() async {
     await GlobalConfiguration().loadFromAsset("app_settings");
     var host = GlobalConfiguration().getValue("host");
@@ -57,6 +63,7 @@ class _LocationState extends State<Location> {
       throw Exception("Failed to get Baustelle");
     }
   }
+  */
 
   _loadUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -64,7 +71,7 @@ class _LocationState extends State<Location> {
     print(prefs.getString('user') ?? "empty");
     setState(() {
       usr = (prefs.getString('user') ?? "empty");
-      getBaustelle();
+      //getBaustelle();
     });
   }
 
@@ -109,7 +116,7 @@ class _LocationState extends State<Location> {
             IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () {
-                  getBaustelle();
+                  //getBaustelle();
                 })
           ],
         ),
@@ -141,13 +148,20 @@ class _LocationState extends State<Location> {
                       subtitle: Text(dateFinal),
                       trailing: Text(data["userID"]),
                       onTap: () {
-                        print(data);
-                        _writeDocID(data["docID"]);
-                        /*Navigator.pushReplacement(
+                        //_writeDocID(data["docID"]);
+                        print(data["bauID"]);
+                        print(reportApi);
+                        var bauTest = data["bauID"];
+                        testing.bauID = bauTest;
+                        testing.bauName = data["bauName"];
+                        testing.date = data["date"];
+                        testing.docID = data["docID"];
+                        testing.userID = data["userID"];
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => (CheckboxWidget())));
-                      */
+                                builder: (context) =>
+                                    (CheckboxWidget(reportData: testing))));
                       },
                     );
                   }).toList(),

@@ -27,31 +27,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'report.dart';
 import 'dialogScreen.dart';
 import 'dialog.dart';
-
-void main() async {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-          body: SafeArea(
-              child: Center(
-        child: CheckboxWidget(),
-      ))),
-    );
-  }
-}
+import 'infoSource.dart';
 
 class CheckboxWidget extends StatefulWidget {
-  CheckboxWidget({Key key}) : super(key: key);
+  final InfoSource reportData;
+  CheckboxWidget({Key key, @required this.reportData}) : super(key: key);
   @override
   CheckboxWidgetState createState() => new CheckboxWidgetState();
 }
 
-class CheckboxWidgetState extends State {
+class CheckboxWidgetState extends State<CheckboxWidget> {
   bool exec = false;
   File _imageFile;
   File _imageFile2;
@@ -178,19 +163,11 @@ class CheckboxWidgetState extends State {
 
   var pullReport;
 
-  Future<void> getReport(String baustelle, DateTime start, DateTime end) async {
+  Future<void> getReport(String docID) async {
     final firestoreInstance = Firestore.instance;
-    final startAtTimestamp = Timestamp.fromMillisecondsSinceEpoch(
-        DateTime.parse(start.toString()).millisecondsSinceEpoch);
-    final endAtTimeStamp = Timestamp.fromMillisecondsSinceEpoch(
-        DateTime.parse(end.toString()).millisecondsSinceEpoch);
     firestoreInstance
         .collection("issues")
-        .where("bauID", isEqualTo: baustelle)
-        .where("user", isEqualTo: data.user)
-        .where("schicht", isGreaterThanOrEqualTo: startAtTimestamp)
-        .where("schicht", isLessThan: endAtTimeStamp)
-        .orderBy("schicht")
+        .where("__name__", isEqualTo: docID)
         .limit(1)
         .getDocuments()
         .then((value) => {
@@ -296,15 +273,8 @@ class CheckboxWidgetState extends State {
   //
 
   _intialDate() async {
-    var date = DateTime.now();
-    data.schicht = date;
     setState(() {
-      String dayW = date.day.toString();
-      String monthW = date.month.toString();
-      String yearW = date.year.toString();
-      String working = dayW + '/' + monthW + '/' + yearW;
-      print(working);
-      dateFinal = working;
+      dateFinal = widget.reportData.date[0];
     });
   }
 
@@ -320,15 +290,16 @@ class CheckboxWidgetState extends State {
       if (_focusNode.hasFocus) {
         bauController.clear();
       } else {
-        bauController.text = data.baustelle;
+        bauController.text = widget.reportData.bauName;
       }
     });
-    //getBaustelle();
+    getReport(widget.reportData.docID);
+    _intialDate();
+
     //Parse Info from WIP baustelle screen
     _loadUser();
     //reportCheck(false, null, null);
     getUDID();
-    _intialDate();
   }
 
   @override
@@ -341,7 +312,7 @@ class CheckboxWidgetState extends State {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => (Location())),
+                MaterialPageRoute(builder: (context) => (Report())),
               );
             }),
         title: logo,
@@ -379,8 +350,6 @@ class CheckboxWidgetState extends State {
                         clearOnSubmit: false,
                         textSubmitted: (text) => setState(() {
                               if (text != "") {
-                                baustelle = text;
-                                data.baustelle = text;
                                 //fetchChecklist(baustelle, bauID);
                               }
                             }))),
