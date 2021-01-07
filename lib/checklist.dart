@@ -89,16 +89,8 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
 
   //
 
-  _navigateAndDisplaySelection(BuildContext context, String keyVar) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => DialogScreen(dialogdata: dialogData)),
-    );
-
-    // After the Selection Screen returns a result, hide any previous snackbars
-    // and show the new result.
-  }
+  // After the Selection Screen returns a result, hide any previous snackbars
+  // and show the new result.
   //
   //
 
@@ -426,7 +418,11 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                         dialogData.statusText = statusInv;
                       }
 
-                      _navigateAndDisplaySelection(context, key);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  (DialogScreen(dialogdata: dialogData))));
                     });
                   },
                 );
