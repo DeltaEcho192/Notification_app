@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vanoli_notification/login/loginKey.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'checklist.dart';
 import 'infoSource.dart';
 
@@ -42,9 +43,19 @@ class _ReportState extends State<Report> {
       "bauID": "406jkk1kik22t9y",
       "bauName": "Test John Durrer"
     },
+    {
+      "docID": "zO1coeiZEnXZohCxeway",
+      "date": ["2020-12-12", "11:00:00.000Z"],
+      "userID": "jd",
+      "bauID": "406jkk1kik22t9y",
+      "bauName": "Test John Durrer"
+    }
   ];
   InfoSource testing = InfoSource();
   var usr = "";
+  var notiCount = 0;
+  List<String> notiArray = [];
+  List<String> notiRmvd = [];
 
   Map bauSugg = {"bauName": "Loading"};
   var bauIDS = {};
@@ -85,7 +96,7 @@ class _ReportState extends State<Report> {
   @override
   void initState() {
     _loadUser();
-
+    _notificationCountTesting();
     super.initState();
   }
 
@@ -103,6 +114,40 @@ class _ReportState extends State<Report> {
     setState(() {
       prefs.setString('user', 'empty');
       prefs.setBool('loged', false);
+    });
+  }
+
+  _notificationCheck(List<String> notiArrayLocal) async {
+    setState(() {
+      FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+    });
+  }
+
+  _notificationCountTesting() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    notiArray = (prefs.getStringList('notiArray') ?? "empty");
+    notiRmvd = (prefs.getStringList('notiRmvd') ?? "empty");
+    for (var x = 0; x < reportApi.length; x++) {
+      var workingID = reportApi[x]["docID"];
+      if (notiRmvd.contains(workingID) == false) {
+        notiArray.add(workingID);
+      }
+    }
+    setState(() {
+      prefs.setStringList("notiArray", notiArray);
+      _notificationCheck(notiArray);
+    });
+  }
+
+  _notificationRead(var rmDocID) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    notiArray.remove(rmDocID);
+    FlutterAppBadger.updateBadgeCount(notiArray.length);
+    setState(() {
+      List<String> rmvd = prefs.getStringList("notiRmvd");
+      rmvd.add(rmDocID);
+      prefs.setStringList("notiRmvd", rmvd);
+      prefs.setStringList("notiArray", notiArray);
     });
   }
 
@@ -151,6 +196,7 @@ class _ReportState extends State<Report> {
                         //_writeDocID(data["docID"]);
                         print(data["bauID"]);
                         print(reportApi);
+                        _notificationRead(data["docID"]);
                         var bauTest = data["bauID"];
                         testing.bauID = bauTest;
                         testing.bauName = data["bauName"];

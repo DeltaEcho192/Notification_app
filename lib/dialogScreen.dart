@@ -75,7 +75,7 @@ class _DialogState extends State<DialogScreen> {
     Icons.play_circle_filled,
     color: Colors.black,
   );
-  String dropdownValue = "Normal Priority";
+  String dropdownValue = "Normal";
 
   //
   //
@@ -132,68 +132,6 @@ class _DialogState extends State<DialogScreen> {
   //
   //
 
-  Future<void> _pickImage(
-    ImageSource source,
-  ) async {
-    File selected;
-    final picker = ImagePicker();
-
-    final pickedFile = await picker.getImage(source: source, imageQuality: 50);
-    //Make sure network is connected!!!!
-    //TODO Add pop up if there is no network
-
-    final FirebaseStorage _storage =
-        FirebaseStorage(storageBucket: 'gs://train-app-287911.appspot.com');
-
-    // ignore: unused_local_variable
-
-    setState(() {
-      _imageFile = File(pickedFile.path);
-      String fileName = 'images/${DateTime.now()}.png';
-      print("Counter" + photoAmt.toString());
-      model.picName = fileName;
-      model.picCheck = true;
-      widget.dialogdata.image1 = fileName;
-      cameraIcon = new Image.file(_imageFile);
-      _uploadTask = _storage.ref().child(model.picName).putFile(_imageFile);
-
-      //Adds all current photo names to an array
-    });
-    await _uploadTask.onComplete;
-    print("Upload done");
-    Toast.show("Bild ist auf Server gespeichert", context,
-        duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-  }
-
-  Future<void> _pickImageSec(ImageSource source) async {
-    File selected;
-    final picker2 = ImagePicker();
-
-    final pickedFile2 =
-        await picker2.getImage(source: source, imageQuality: 50);
-    //Make sure network is connected!!!!
-    //TODO Add pop up if there is no network
-
-    final FirebaseStorage _storage =
-        FirebaseStorage(storageBucket: 'gs://train-app-287911.appspot.com');
-
-    // ignore: unused_local_variable
-
-    setState(() {
-      _imageFile2 = File(pickedFile2.path);
-      String fileName = 'images/${DateTime.now()}.png';
-      model.picName = fileName;
-      model.picCheck = true;
-      widget.dialogdata.image2 = fileName;
-      cameraIcon2 = new Image.file(_imageFile2);
-      _uploadTask2 = _storage.ref().child(fileName).putFile(_imageFile2);
-    });
-    await _uploadTask2.onComplete;
-    print("Upload done on second");
-    Toast.show("Bild ist auf Server gespeichert", context,
-        duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-  }
-
   //
   //
 
@@ -230,12 +168,13 @@ class _DialogState extends State<DialogScreen> {
     }
   }
 
-  void priorityCheck() {
+  void _priorityCheck() {
     if (widget.dialogdata.priority != null) {
       switch (widget.dialogdata.priority) {
         case 1:
           {
             setState(() {
+              print("high");
               dropdownValue = "Hoch";
             });
           }
@@ -243,6 +182,7 @@ class _DialogState extends State<DialogScreen> {
         case 2:
           {
             setState(() {
+              print("Normal Case");
               dropdownValue = "Normal";
             });
           }
@@ -250,13 +190,14 @@ class _DialogState extends State<DialogScreen> {
         case 3:
           {
             setState(() {
+              print("Low");
               dropdownValue = "Tief";
             });
           }
       }
     } else {
+      print("Normal");
       dropdownValue = "Normal";
-      widget.dialogdata.priority = 2;
     }
   }
 
@@ -426,7 +367,7 @@ class _DialogState extends State<DialogScreen> {
     audioCheck();
     _imageCheck();
     _init();
-    priorityCheck();
+    _priorityCheck();
   }
 
   @override
@@ -439,54 +380,8 @@ class _DialogState extends State<DialogScreen> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              if (txt.text == null ||
-                  widget.dialogdata.image2 == null ||
-                  widget.dialogdata.image1 == null) {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("Warnung"),
-                      content: SingleChildScrollView(
-                        child: ListBody(
-                          children: <Widget>[
-                            Text(
-                                'Wollen Sie Ihre Änderungen wirklich verwerfen?'),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        new FlatButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context, widget.dialogdata);
-                            },
-                            child: Text("Ja")),
-                        new FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Nein"))
-                      ],
-                    );
-                  },
-                );
-              } else {
-                Navigator.pop(context);
-              }
+              Navigator.pop(context);
             }),
-        actions: [
-          new IconButton(
-            icon: new Icon(
-              Icons.save,
-              color: Colors.red[800],
-            ),
-            onPressed: () {
-              widget.dialogdata.text = txt.text;
-              Navigator.pop(context, widget.dialogdata);
-            },
-          )
-        ],
       ),
       body: new Column(
         mainAxisSize: MainAxisSize.min,
@@ -500,13 +395,7 @@ class _DialogState extends State<DialogScreen> {
                   controller: txt,
                   minLines: 4,
                   maxLines: 4,
-                  onChanged: (String value) {
-                    setState(() {
-                      checkboxIcon = Icon(Icons.check_box_outline_blank);
-                      secondCheck = false;
-                      widget.dialogdata.check = false;
-                    });
-                  },
+                  readOnly: true,
                   decoration: const InputDecoration(
                     hintText: "Problem Beschreibung",
                     contentPadding: const EdgeInsets.only(left: 10, right: 10),
@@ -528,35 +417,6 @@ class _DialogState extends State<DialogScreen> {
                 child: IconButton(
                   padding: new EdgeInsets.all(5.0),
                   icon: cameraIcon,
-                  onPressed: () => (showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Selection"),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text('Select image from Image or Gallery'),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          new FlatButton(
-                              onPressed: () {
-                                _pickImage(ImageSource.camera);
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.camera_alt)),
-                          new FlatButton(
-                              onPressed: () {
-                                _pickImage(ImageSource.gallery);
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.collections))
-                        ],
-                      );
-                    },
-                  )),
                 ),
               ),
               new SizedBox(
@@ -565,35 +425,6 @@ class _DialogState extends State<DialogScreen> {
                 child: IconButton(
                   padding: new EdgeInsets.all(5.0),
                   icon: cameraIcon2,
-                  onPressed: () => (showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Selection"),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text('Select image from Image or Gallery'),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          new FlatButton(
-                              onPressed: () {
-                                _pickImageSec(ImageSource.camera);
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.camera_alt)),
-                          new FlatButton(
-                              onPressed: () {
-                                _pickImageSec(ImageSource.gallery);
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(Icons.collections))
-                        ],
-                      );
-                    },
-                  )),
                 ),
               )
             ],
@@ -603,22 +434,8 @@ class _DialogState extends State<DialogScreen> {
             children: <Widget>[
               new Text("Keine Probleme"),
               new IconButton(
-                  icon: checkboxIcon,
-                  onPressed: () {
-                    if (widget.dialogdata.check == false) {
-                      setState(() {
-                        checkboxIcon = Icon(Icons.check_box);
-                        secondCheck = true;
-                        widget.dialogdata.check = true;
-                      });
-                    } else {
-                      setState(() {
-                        checkboxIcon = Icon(Icons.check_box_outline_blank);
-                        secondCheck = false;
-                        widget.dialogdata.check = false;
-                      });
-                    }
-                  }),
+                icon: checkboxIcon,
+              ),
               new Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: Text("Priorität:"),
@@ -633,28 +450,6 @@ class _DialogState extends State<DialogScreen> {
                   height: 2,
                   color: Colors.red,
                 ),
-                onChanged: (String newValue) {
-                  setState(() {
-                    dropdownValue = newValue;
-                    switch (newValue) {
-                      case "Hoch":
-                        {
-                          widget.dialogdata.priority = 1;
-                        }
-                        break;
-                      case "Normal":
-                        {
-                          widget.dialogdata.priority = 2;
-                        }
-                        break;
-                      case "Tief":
-                        {
-                          widget.dialogdata.priority = 3;
-                        }
-                        break;
-                    }
-                  });
-                },
                 items: <String>['Hoch', 'Normal', 'Tief']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
@@ -671,35 +466,6 @@ class _DialogState extends State<DialogScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text("Voice Message"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: new IconButton(
-                    onPressed: () {
-                      switch (_currentStatus) {
-                        case RecordingStatus.Initialized:
-                          {
-                            _start();
-                            break;
-                          }
-                        case RecordingStatus.Recording:
-                          {
-                            _currentStatus != RecordingStatus.Unset
-                                ? _stop()
-                                : null;
-                            break;
-                          }
-                        case RecordingStatus.Stopped:
-                          {
-                            _init();
-                            break;
-                          }
-                        default:
-                          break;
-                      }
-                    },
-                    icon: _buildText(_currentStatus),
-                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

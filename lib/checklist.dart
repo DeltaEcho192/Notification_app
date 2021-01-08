@@ -276,21 +276,10 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
   @override
   void initState() {
     super.initState();
-
-    _focusNode = FocusNode();
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        bauController.clear();
-      } else {
-        bauController.text = widget.reportData.bauName;
-      }
-    });
+    bauController.text = widget.reportData.bauName;
     getReport(widget.reportData.docID);
     _intialDate();
-
-    //Parse Info from WIP baustelle screen
     _loadUser();
-    //reportCheck(false, null, null);
     getUDID();
   }
 
@@ -418,7 +407,7 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                         dialogData.statusText = statusInv;
                       }
 
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
