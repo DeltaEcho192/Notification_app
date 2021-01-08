@@ -125,16 +125,20 @@ class _ReportState extends State<Report> {
 
   _notificationCountTesting() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    notiArray = (prefs.getStringList('notiArray') ?? "empty");
-    notiRmvd = (prefs.getStringList('notiRmvd') ?? "empty");
+    notiArray = [];
+    notiRmvd = (prefs.getStringList('notiRmvd') ?? []);
+    print("Counting Notifications");
     for (var x = 0; x < reportApi.length; x++) {
       var workingID = reportApi[x]["docID"];
+      print("Removed Notifications DocID" + notiRmvd.toString());
       if (notiRmvd.contains(workingID) == false) {
+        print("Adding ID" + workingID);
         notiArray.add(workingID);
       }
     }
     setState(() {
       prefs.setStringList("notiArray", notiArray);
+      print(notiArray);
       _notificationCheck(notiArray);
     });
   }
@@ -144,8 +148,9 @@ class _ReportState extends State<Report> {
     notiArray.remove(rmDocID);
     FlutterAppBadger.updateBadgeCount(notiArray.length);
     setState(() {
-      List<String> rmvd = prefs.getStringList("notiRmvd");
+      List<String> rmvd = (prefs.getStringList("notiRmvd") ?? []);
       rmvd.add(rmDocID);
+      notiRmvd = rmvd;
       prefs.setStringList("notiRmvd", rmvd);
       prefs.setStringList("notiArray", notiArray);
     });
@@ -186,10 +191,21 @@ class _ReportState extends State<Report> {
                 child: ListView(
                   padding: EdgeInsets.all(12.0),
                   children: reportApi.map((data) {
+                    var statusColor = Colors.black;
+                    print("Notification Array" + notiArray.toString());
+                    print("Notification Removed" + notiRmvd.toString());
+                    if (notiArray.contains(data["docID"])) {
+                      statusColor = Colors.green;
+                    }
                     var dateW = data["date"];
                     var dateFinal = dateW[0];
                     return ListTile(
-                      title: Text(data['bauName']),
+                      title: Text(
+                        data['bauName'],
+                        style: TextStyle(
+                          color: statusColor,
+                        ),
+                      ),
                       subtitle: Text(dateFinal),
                       trailing: Text(data["userID"]),
                       onTap: () {
