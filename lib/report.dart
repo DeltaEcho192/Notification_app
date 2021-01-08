@@ -48,7 +48,23 @@ class _ReportState extends State<Report> {
       "date": ["2020-12-12", "11:00:00.000Z"],
       "userID": "jd",
       "bauID": "406jkk1kik22t9y",
+      "bauName": "Test Anthony Durrer"
+    }
+  ];
+  List<Map> searchedList = [
+    {
+      "docID": "beIiSdDn3bUfGMTqHD9h",
+      "date": ["2020-12-16", "08:28:41.000Z"],
+      "userID": "ad",
+      "bauID": "406jkk1kik22t9y",
       "bauName": "Test John Durrer"
+    },
+    {
+      "docID": "zO1coeiZEnXZohCxeway",
+      "date": ["2020-12-12", "11:00:00.000Z"],
+      "userID": "jd",
+      "bauID": "406jkk1kik22t9y",
+      "bauName": "Test Anthony Durrer"
     }
   ];
   InfoSource testing = InfoSource();
@@ -103,8 +119,9 @@ class _ReportState extends State<Report> {
   //Change to reflect the map and search based on 'data.bauName'
   onItemChanged(String value) {
     setState(() {
-      newDataList = mainDataList
-          .where((string) => string.toLowerCase().contains(value.toLowerCase()))
+      searchedList = reportApi
+          .where((string) =>
+              string["bauName"].toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
@@ -190,7 +207,7 @@ class _ReportState extends State<Report> {
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.all(12.0),
-                  children: reportApi.map((data) {
+                  children: searchedList.map((data) {
                     var statusColor = Colors.black;
                     print("Notification Array" + notiArray.toString());
                     print("Notification Removed" + notiRmvd.toString());
