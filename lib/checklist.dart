@@ -185,8 +185,11 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                   errors = Map<String, String>.from(errorsLoc);
                   audio = Map<String, String>.from(audioLoc);
                   priority = Map<String, int>.from(priorityLoc);
-                  status = Map<String, int>.from(statusLoc);
-                  statusText = Map<String, Map>.from(statusTextLoc);
+                  if (statusLoc != null) {
+                    status = Map<String, int>.from(statusLoc);
+                    statusText = Map<String, Map>.from(statusTextLoc);
+                  }
+
                   subtitles = {...errors, ...comments};
                   print(subtitles);
                   numbers.forEach((key, value) {

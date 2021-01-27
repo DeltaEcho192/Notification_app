@@ -37,36 +37,65 @@ class _ReportState extends State<Report> {
   List<String> newDataList = [];
   List<Map> reportApi = [
     {
-      "docID": "beIiSdDn3bUfGMTqHD9h",
-      "date": ["2020-12-16", "08:28:41.000Z"],
+      "docID": "6CEAvn1pOu4UziwMuGD3",
+      "date": ["2020-11-26", "09:51:11.000Z"],
       "userID": "ad",
-      "bauID": "406jkk1kik22t9y",
-      "bauName": "Test John Durrer"
+      "bauID": "2",
+      "bauName": "Zürich-9221"
     },
     {
-      "docID": "zO1coeiZEnXZohCxeway",
-      "date": ["2020-12-12", "11:00:00.000Z"],
+      "docID": "6GTqk2ONKcwIpkqUW5Nc",
+      "date": ["2020-11-11", "13:47:48.000Z"],
       "userID": "jd",
-      "bauID": "406jkk1kik22t9y",
-      "bauName": "Test Anthony Durrer"
+      "bauID": "2",
+      "bauName": "Zürich-9221"
+    },
+    {
+      "docID": "7Mkz2RVcYCysOegOm0uo",
+      "date": ["2020-11-10", "11:00:00.000Z"],
+      "userID": "jd",
+      "bauID": "2",
+      "bauName": "Zürich-9221"
+    },
+    {
+      "docID": "CwLREV01arFFbcimEnNj",
+      "date": ["2020-11-12", "09:19:15.000Z"],
+      "userID": "jd",
+      "bauID": "2",
+      "bauName": "Zürich-9221"
     }
   ];
   List<Map> searchedList = [
     {
-      "docID": "beIiSdDn3bUfGMTqHD9h",
-      "date": ["2020-12-16", "08:28:41.000Z"],
+      "docID": "6CEAvn1pOu4UziwMuGD3",
+      "date": ["2020-11-26", "09:51:11.000Z"],
       "userID": "ad",
-      "bauID": "406jkk1kik22t9y",
-      "bauName": "Test John Durrer"
+      "bauID": "2",
+      "bauName": "Zürich-9221"
     },
     {
-      "docID": "zO1coeiZEnXZohCxeway",
-      "date": ["2020-12-12", "11:00:00.000Z"],
+      "docID": "6GTqk2ONKcwIpkqUW5Nc",
+      "date": ["2020-11-11", "13:47:48.000Z"],
       "userID": "jd",
-      "bauID": "406jkk1kik22t9y",
-      "bauName": "Test Anthony Durrer"
-    }
+      "bauID": "2",
+      "bauName": "Zürich-9221"
+    },
+    {
+      "docID": "7Mkz2RVcYCysOegOm0uo",
+      "date": ["2020-11-10", "11:00:00.000Z"],
+      "userID": "jd",
+      "bauID": "2",
+      "bauName": "Zürich-9221"
+    },
+    {
+      "docID": "CwLREV01arFFbcimEnNj",
+      "date": ["2020-11-12", "09:19:15.000Z"],
+      "userID": "jd",
+      "bauID": "2",
+      "bauName": "Zürich-9221"
+    },
   ];
+
   InfoSource testing = InfoSource();
   var usr = "";
   var notiCount = 0;
@@ -85,12 +114,17 @@ class _ReportState extends State<Report> {
 
     if (response.statusCode == 200) {
       reportApi = await jsonDecode(response.body);
+      searchedList = reportApi;ß
       print(reportApi[0]);
     } else {
       throw Exception("Failed to get Baustelle");
     }
   }
   */
+  _sortList() {
+    searchedList.sort((a, b) => (b["date"][0]).compareTo(a["date"][0]));
+    print(searchedList);
+  }
 
   _loadUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -113,6 +147,7 @@ class _ReportState extends State<Report> {
   void initState() {
     _loadUser();
     _notificationCountTesting();
+    _sortList();
     super.initState();
   }
 
