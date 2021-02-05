@@ -7,6 +7,7 @@ import 'package:vanoli_notification/login/loginKey.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'checklist.dart';
 import 'infoSource.dart';
+import 'PushNotificationManager.dart';
 
 void main() => runApp(new MyApp());
 
@@ -32,6 +33,8 @@ class Report extends StatefulWidget {
 }
 
 class _ReportState extends State<Report> {
+  PushNotificationsManager notificationInit = new PushNotificationsManager();
+
   TextEditingController editingController = TextEditingController();
   List<String> mainDataList = [];
   List<String> newDataList = [];
@@ -145,6 +148,7 @@ class _ReportState extends State<Report> {
 
   @override
   void initState() {
+    notificationInit.init();
     _loadUser();
     _notificationCountTesting();
     _sortList();

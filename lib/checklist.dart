@@ -52,6 +52,7 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
   Map<String, Map> statusText = {};
   Map<String, int> emptyStatus = {};
   Map<String, Map> workComEmpty = {};
+  Map<String, bool> filterd = {};
   List<String> toDelete = [];
   String dateFinal = "Schicht:";
   String _udid = 'Unknown';
@@ -155,6 +156,7 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
 
   var pullReport;
 
+  //Where filtering of errors should occor so only error checkboxs show up
   Future<void> getReport(String docID) async {
     final firestoreInstance = Firestore.instance;
     firestoreInstance
@@ -213,6 +215,11 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                     }
                   });
                   print("Subtitiles $subtitles");
+                  numbers.forEach((key, value) {
+                    if (value == false) {
+                      filterd[key] = value;
+                    }
+                  });
                   names = Map<String, String>.from(imagesLoc);
                   (context as Element).reassemble();
                 });
@@ -341,7 +348,7 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
           Expanded(
             //Creates the checklist dynamically based on API
             child: ListView(
-              children: numbers.keys.map((String key) {
+              children: filterd.keys.map((String key) {
                 var statusColor = Colors.black;
                 //var statusIcon;
                 if (status[key] == 1) {
@@ -365,7 +372,7 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                     maxLines: 1,
                   ),
                   //secondary: statusIcon,
-                  value: numbers[key],
+                  value: filterd[key],
                   activeColor: Colors.green,
                   checkColor: Colors.white,
                   onChanged: (bool value) {
@@ -373,15 +380,15 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                       value = secondCheck;
                       print(errors[key]);
                       print(errors);
-                      if (numbers[key] == true) {
+                      if (filterd[key] == true) {
                         dialogData.text = comments[key];
                       } else {
                         dialogData.text = errors[key];
                       }
                       exec = true;
-                      print(numbers[key]);
+                      print(filterd[key]);
                       dialogData.name = key;
-                      dialogData.check = numbers[key];
+                      dialogData.check = filterd[key];
                       dialogData.image1 = names[key];
                       dialogData.image2 = names[(key + "Sec")];
                       dialogData.audio = audio[key];

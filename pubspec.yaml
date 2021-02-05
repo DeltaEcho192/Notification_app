@@ -42,7 +42,7 @@ dependencies:
   flutter_audio_recorder: ^0.5.5
   audioplayers: ^0.16.2
   package_info: ^0.4.3+2
-
+  firebase_messaging: ^6.0.0
   flutter_app_badger: ^1.1.2
 
 

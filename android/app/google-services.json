@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "1070776313866",
+    "firebase_url": "https://train-app-287911.firebaseio.com",
+    "project_id": "train-app-287911",
+    "storage_bucket": "train-app-287911.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070776313866:android:239d57b305ece0892157f3",
+        "android_client_info": {
+          "package_name": "com.example.train_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070776313866-vh4aqm7326hipft3g5v3sgu2jbqj9gri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeSt3IcHDIZlP3wL0m1p_lkvA3EM7unAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070776313866-vh4aqm7326hipft3g5v3sgu2jbqj9gri.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1070776313866-bp5n245ovpufrin8aaechvvthors7p0i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "report.vanoli-ag.notificationReport"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070776313866:android:79a53abc36f1090e2157f3",
+        "android_client_info": {
+          "package_name": "report.vanoli_ag.notificationReport"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070776313866-vh4aqm7326hipft3g5v3sgu2jbqj9gri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeSt3IcHDIZlP3wL0m1p_lkvA3EM7unAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070776313866-vh4aqm7326hipft3g5v3sgu2jbqj9gri.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1070776313866-bp5n245ovpufrin8aaechvvthors7p0i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "report.vanoli-ag.notificationReport"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

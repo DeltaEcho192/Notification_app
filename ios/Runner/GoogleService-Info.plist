@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1070776313866-om7pu4vhi7etmu77nn74473bo2eekd4r.apps.googleusercontent.com</string>
+	<string>1070776313866-bp5n245ovpufrin8aaechvvthors7p0i.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1070776313866-om7pu4vhi7etmu77nn74473bo2eekd4r</string>
+	<string>com.googleusercontent.apps.1070776313866-bp5n245ovpufrin8aaechvvthors7p0i</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDyTc7JMESsKk9yGBZqbeCFNFfBH5wEucs</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>report.vanoli-ag.notification</string>
+	<string>report.vanoli-ag.notificationReport</string>
 	<key>PROJECT_ID</key>
 	<string>train-app-287911</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1070776313866:ios:daece41eb93e6faf2157f3</string>
+	<string>1:1070776313866:ios:657304c083ab7d892157f3</string>
 	<key>DATABASE_URL</key>
 	<string>https://train-app-287911.firebaseio.com</string>
 </dict>
