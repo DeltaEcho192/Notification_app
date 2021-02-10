@@ -117,7 +117,7 @@ class _ReportState extends State<Report> {
 
     if (response.statusCode == 200) {
       reportApi = await jsonDecode(response.body);
-      searchedList = reportApi;ß
+      searchedList = reportApi;
       print(reportApi[0]);
     } else {
       throw Exception("Failed to get Baustelle");
@@ -135,6 +135,7 @@ class _ReportState extends State<Report> {
     print(prefs.getString('user') ?? "empty");
     setState(() {
       usr = (prefs.getString('user') ?? "empty");
+      _tokenInit();
       //getBaustelle();
     });
   }
@@ -146,9 +147,30 @@ class _ReportState extends State<Report> {
     });
   }
 
+  Future<void> _tokenInit() async {
+    var token = await notificationInit.init();
+    print(token);
+    await GlobalConfiguration().loadFromAsset("app_settings");
+    var host = GlobalConfiguration().getValue("host");
+    var port = GlobalConfiguration().getValue("port");
+    var urlLocal = "https://" + host + ":" + port + '/updateToken/';
+    print(urlLocal);
+    print(jsonEncode({"userid": usr, "token": token}));
+    final check = await http.post(urlLocal,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({"userid": usr, "token": token}));
+
+    if (check.statusCode == 201) {
+      print("User token updated");
+    } else {
+      throw Exception('Failed to update user token');
+    }
+  }
+
   @override
   void initState() {
-    notificationInit.init();
     _loadUser();
     _notificationCountTesting();
     _sortList();

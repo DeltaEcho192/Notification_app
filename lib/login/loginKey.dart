@@ -4,10 +4,10 @@ import 'package:flutter_udid/flutter_udid.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
-//import '../checkbox/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'dart:convert';
+import '../report.dart';
 
 void main() => runApp(MyApp());
 
@@ -108,8 +108,8 @@ class _LoginKeyState extends State<LoginKey> {
     bool usercheck = (prefs.getBool('loged') ?? false);
 
     if (usercheck == true) {
-      //Navigator.pushReplacement(
-      // context, new MaterialPageRoute(builder: (context) => Location()));
+      Navigator.pushReplacement(
+          context, new MaterialPageRoute(builder: (context) => Report()));
     }
   }
 
@@ -214,13 +214,11 @@ class _LoginKeyState extends State<LoginKey> {
                               {
                                 _setLogState(true),
                                 _writeUser(value['userid']),
-                                /*
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => (Location())),
+                                      builder: (context) => (Report())),
                                 ),
-                                */
                               }
                             else
                               {
