@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class InfoSource {
   String docID;
-  List<String> date;
+  List<dynamic> date;
   String userID;
   String bauID;
   String bauName;

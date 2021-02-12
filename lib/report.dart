@@ -38,7 +38,10 @@ class _ReportState extends State<Report> {
   TextEditingController editingController = TextEditingController();
   List<String> mainDataList = [];
   List<String> newDataList = [];
-  List<Map> reportApi = [
+  List<dynamic> reportApi = [];
+  List<dynamic> searchedList = [];
+
+  /*List<Map> reportApi = [
     {
       "docID": "6CEAvn1pOu4UziwMuGD3",
       "date": ["2020-11-26", "09:51:11.000Z"],
@@ -98,7 +101,7 @@ class _ReportState extends State<Report> {
       "bauName": "Zürich-9221"
     },
   ];
-
+  */
   InfoSource testing = InfoSource();
   var usr = "";
   var notiCount = 0;
@@ -107,7 +110,7 @@ class _ReportState extends State<Report> {
 
   Map bauSugg = {"bauName": "Loading"};
   var bauIDS = {};
-  /*
+
   Future<void> getBaustelle() async {
     await GlobalConfiguration().loadFromAsset("app_settings");
     var host = GlobalConfiguration().getValue("host");
@@ -117,13 +120,18 @@ class _ReportState extends State<Report> {
 
     if (response.statusCode == 200) {
       reportApi = await jsonDecode(response.body);
-      searchedList = reportApi;
-      print(reportApi[0]);
+      setState(() {
+        searchedList = List<dynamic>.from(reportApi);
+        _notificationCountTesting();
+        _sortList();
+      });
+
+      print(reportApi);
     } else {
       throw Exception("Failed to get Baustelle");
     }
   }
-  */
+
   _sortList() {
     searchedList.sort((a, b) => (b["date"][0]).compareTo(a["date"][0]));
     print(searchedList);
@@ -136,7 +144,7 @@ class _ReportState extends State<Report> {
     setState(() {
       usr = (prefs.getString('user') ?? "empty");
       _tokenInit();
-      //getBaustelle();
+      getBaustelle();
     });
   }
 
@@ -198,6 +206,7 @@ class _ReportState extends State<Report> {
   _notificationCheck(List<String> notiArrayLocal) async {
     setState(() {
       FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+      print("Writing badge Icons");
     });
   }
 
@@ -244,7 +253,7 @@ class _ReportState extends State<Report> {
             IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () {
-                  //getBaustelle();
+                  getBaustelle();
                 })
           ],
         ),
@@ -288,12 +297,12 @@ class _ReportState extends State<Report> {
                       trailing: Text(data["userID"]),
                       onTap: () {
                         //_writeDocID(data["docID"]);
-                        print(data["bauID"]);
-                        print(reportApi);
+
                         _notificationRead(data["docID"]);
                         var bauTest = data["bauID"];
                         testing.bauID = bauTest;
                         testing.bauName = data["bauName"];
+                        print(data["date"]);
                         testing.date = data["date"];
                         testing.docID = data["docID"];
                         testing.userID = data["userID"];

@@ -440,24 +440,10 @@ class _DialogState extends State<DialogScreen> {
                 padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: Text("Priorität:"),
               ),
-              new DropdownButton<String>(
-                value: dropdownValue,
-                icon: Icon(Icons.arrow_downward),
-                iconSize: 24,
-                elevation: 16,
-                style: TextStyle(color: Colors.black),
-                underline: Container(
-                  height: 2,
-                  color: Colors.red,
-                ),
-                items: <String>['Hoch', 'Normal', 'Tief']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              )
+              new Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Text(dropdownValue),
+              ),
             ],
           ),
           new Row(
