@@ -125,8 +125,6 @@ class _ReportState extends State<Report> {
         _notificationCountTesting();
         _sortList();
       });
-
-      print(reportApi);
     } else {
       throw Exception("Failed to get Baustelle");
     }
@@ -134,7 +132,6 @@ class _ReportState extends State<Report> {
 
   _sortList() {
     searchedList.sort((a, b) => (b["date"][0]).compareTo(a["date"][0]));
-    print(searchedList);
   }
 
   _loadUser() async {
@@ -217,15 +214,12 @@ class _ReportState extends State<Report> {
     print("Counting Notifications");
     for (var x = 0; x < reportApi.length; x++) {
       var workingID = reportApi[x]["docID"];
-      print("Removed Notifications DocID" + notiRmvd.toString());
       if (notiRmvd.contains(workingID) == false) {
-        print("Adding ID" + workingID);
         notiArray.add(workingID);
       }
     }
     setState(() {
       prefs.setStringList("notiArray", notiArray);
-      print(notiArray);
       _notificationCheck(notiArray);
     });
   }
@@ -237,10 +231,61 @@ class _ReportState extends State<Report> {
     setState(() {
       List<String> rmvd = (prefs.getStringList("notiRmvd") ?? []);
       rmvd.add(rmDocID);
+
       notiRmvd = rmvd;
       prefs.setStringList("notiRmvd", rmvd);
       prefs.setStringList("notiArray", notiArray);
     });
+  }
+
+  _notificationLongPress(var addDocID) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      notiArray.add(addDocID);
+      FlutterAppBadger.updateBadgeCount(notiArray.length);
+      List<String> rmvd = (prefs.getStringList("notiRmvd") ?? []);
+      while (rmvd.remove(addDocID) == true) {
+        rmvd.remove(addDocID);
+      }
+      notiRmvd = rmvd;
+      print("Unread Report");
+      prefs.setStringList("notiRmvd", rmvd);
+      prefs.setStringList("notiArray", notiArray);
+    });
+  }
+
+  Future<void> _showLongPressDialog(var dialogDocID) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Unread Report'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to unread this report?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () {
+                _notificationLongPress(dialogDocID);
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -279,8 +324,7 @@ class _ReportState extends State<Report> {
                   padding: EdgeInsets.all(12.0),
                   children: searchedList.map((data) {
                     var statusColor = Colors.black;
-                    print("Notification Array" + notiArray.toString());
-                    print("Notification Removed" + notiRmvd.toString());
+
                     if (notiArray.contains(data["docID"])) {
                       statusColor = Colors.green;
                     }
@@ -295,6 +339,9 @@ class _ReportState extends State<Report> {
                       ),
                       subtitle: Text(dateFinal),
                       trailing: Text(data["userID"]),
+                      onLongPress: () {
+                        _showLongPressDialog(data["docID"]);
+                      },
                       onTap: () {
                         //_writeDocID(data["docID"]);
 
