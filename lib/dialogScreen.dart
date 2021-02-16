@@ -118,15 +118,10 @@ class _DialogState extends State<DialogScreen> {
   }
 
   Future<void> audioLoad(String fileName) async {
-    storage
-        .ref()
-        .child(fileName)
-        .getData(10000000)
-        .then((value) => setState(() {
-              var audioBytes = value;
-              AudioPlayer audioPlayer = AudioPlayer();
-              audioPlayer.playBytes(audioBytes);
-            }));
+    storage.ref().child(fileName).getDownloadURL().then((value) => setState(() {
+          AudioPlayer audioPlayer = AudioPlayer();
+          audioPlayer.play(value);
+        }));
   }
 
   //

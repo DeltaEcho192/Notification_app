@@ -8,6 +8,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'checklist.dart';
 import 'infoSource.dart';
 import 'PushNotificationManager.dart';
+import 'lifeCycle.dart';
 
 void main() => runApp(new MyApp());
 
@@ -32,8 +33,9 @@ class Report extends StatefulWidget {
   _ReportState createState() => new _ReportState();
 }
 
-class _ReportState extends State<Report> {
+class _ReportState extends State<Report> with WidgetsBindingObserver {
   PushNotificationsManager notificationInit = new PushNotificationsManager();
+  LifecycleEventHandler lifecycleCheck = new LifecycleEventHandler();
 
   TextEditingController editingController = TextEditingController();
   List<String> mainDataList = [];
@@ -180,6 +182,19 @@ class _ReportState extends State<Report> {
     _notificationCountTesting();
     _sortList();
     super.initState();
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+        resumeCallBack: () async => setState(() {
+              // do something
+              _notificationCountTesting();
+              print("resumed State");
+            })));
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   //Change to reflect the map and search based on 'data.bauName'
@@ -202,8 +217,10 @@ class _ReportState extends State<Report> {
 
   _notificationCheck(List<String> notiArrayLocal) async {
     setState(() {
-      FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
-      print("Writing badge Icons");
+      if (FlutterAppBadger.isAppBadgeSupported() == true) {
+        FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+        print("Writing badge Icons");
+      }
     });
   }
 
