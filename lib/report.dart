@@ -9,6 +9,7 @@ import 'checklist.dart';
 import 'infoSource.dart';
 import 'PushNotificationManager.dart';
 import 'lifeCycle.dart';
+import 'navKey.dart';
 
 void main() => runApp(new MyApp());
 
@@ -104,7 +105,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     },
   ];
   */
-  InfoSource testing = InfoSource();
+  InfoSource dataClass = InfoSource();
   var usr = "";
   var notiCount = 0;
   List<String> notiArray = [];
@@ -364,17 +365,17 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
 
                         _notificationRead(data["docID"]);
                         var bauTest = data["bauID"];
-                        testing.bauID = bauTest;
-                        testing.bauName = data["bauName"];
+                        dataClass.bauID = bauTest;
+                        dataClass.bauName = data["bauName"];
                         print(data["date"]);
-                        testing.date = data["date"];
-                        testing.docID = data["docID"];
-                        testing.userID = data["userID"];
+                        dataClass.date = data["date"];
+                        dataClass.docID = data["docID"];
+                        dataClass.userID = data["userID"];
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    (CheckboxWidget(reportData: testing))));
+                                    (CheckboxWidget(reportData: dataClass))));
                       },
                     );
                   }).toList(),

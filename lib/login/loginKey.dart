@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'dart:convert';
 import '../report.dart';
+import '../navKey.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: LoginKey(),
+      navigatorKey: SfcKeys.navKey,
     );
   }
 }
