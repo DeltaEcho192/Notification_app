@@ -218,10 +218,8 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
 
   _notificationCheck(List<String> notiArrayLocal) async {
     setState(() {
-      if (FlutterAppBadger.isAppBadgeSupported() == true) {
-        FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
-        print("Writing badge Icons");
-      }
+      FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+      print("Writing badge Icons");
     });
   }
 

@@ -21,17 +21,34 @@ class PushNotificationsManager {
       // For iOS request permission first.
       final navigatorKey = SfcKeys.navKey;
       _firebaseMessaging.requestNotificationPermissions();
-      InfoSource dataClass = InfoSource();
+
       _firebaseMessaging.configure(
         onMessage: (message) async {},
         onResume: (message) async {
-          var testDocID = await _handleNotification(message);
-          print("Notification Docid " + testDocID);
-          dataClass.bauID = "eewk41kiu3kc3k";
-          dataClass.bauName = "Test";
-          dataClass.date = ["2021-02-16", "19:34:05.000Z"];
-          dataClass.docID = "JUKcmuKmQde898VIavwz";
-          dataClass.userID = "ad";
+          print("Onresume Notificaiton Handler");
+          Map notiData = await _handleNotification(message);
+          InfoSource dataClass = new InfoSource();
+          print(notiData);
+          //var data = message['data'] ?? message;
+          if (notiData["date"] is String) {
+            print("date is string");
+          } else {
+            print("date is not a string");
+          }
+
+          dataClass.bauID = notiData["bauID"];
+          dataClass.bauName = notiData["bauName"];
+          dataClass.date = [notiData["date"], "11:00:00.000Z"];
+          dataClass.docID = notiData["docID"];
+          dataClass.userID = notiData["userID"];
+
+          /*
+          dataClass.bauID = "6";
+          dataClass.bauName = "VKS-NB Industriehalle Bassersdorf";
+          dataClass.date = ["2020-11-24", "10:41:49.000Z"];
+          dataClass.docID = "R0LIzEYcyef4XYwsQOD6";
+          dataClass.userID = "milenkomilovanovic";
+          */
           print(dataClass);
           navigatorKey.currentState.push(MaterialPageRoute(
               builder: (context) => (CheckboxWidget(reportData: dataClass))));
@@ -46,9 +63,20 @@ class PushNotificationsManager {
     }
   }
 
-  Future<String> _handleNotification(Map<dynamic, dynamic> message) async {
+  Future<Map> _handleNotification(Map<dynamic, dynamic> message) async {
+    var notiData = {};
     var data = message['data'] ?? message;
-    String docIDMessage = data['docID'];
-    return docIDMessage;
+    print(data["bauID"]);
+    print(data["bauName"]);
+    print(data["date"]);
+    print(data["docID"]);
+    print(data["userID"]);
+
+    notiData["bauID"] = data["bauID"];
+    notiData["bauName"] = data["bauName"];
+    notiData["date"] = data["date"];
+    notiData["docID"] = data["docID"];
+    notiData["userID"] = data["userID"];
+    return notiData;
   }
 }
