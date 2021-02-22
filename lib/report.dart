@@ -62,7 +62,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     {
       "docID": "7Mkz2RVcYCysOegOm0uo",
       "date": ["2020-11-10", "11:00:00.000Z"],
-      "userID": "jd",
+      "userID": "jd", 
       "bauID": "2",
       "bauName": "Zürich-9221"
     },
@@ -110,6 +110,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
   var notiCount = 0;
   List<String> notiArray = [];
   List<String> notiRmvd = [];
+  bool badgeInit = false;
 
   Map bauSugg = {"bauName": "Loading"};
   var bauIDS = {};
@@ -217,10 +218,24 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
   }
 
   _notificationCheck(List<String> notiArrayLocal) async {
-    setState(() {
-      FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
-      print("Writing badge Icons");
-    });
+    if (badgeInit == false) {
+      var check = await FlutterAppBadger.isAppBadgeSupported();
+      if (check == true) {
+        print(check);
+        print("App badger is true");
+        setState(() {
+          FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+          print("Writing badge Icons");
+        });
+      } else {
+        _badgeFalseDialog();
+      }
+    } else {
+      setState(() {
+        FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
+        print("Writing badge Icons");
+      });
+    }
   }
 
   _notificationCountTesting() async {
@@ -294,6 +309,33 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
             ),
             TextButton(
               child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _badgeFalseDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('System incompatible'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('This android phone is incompatible with app badges'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Okay'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
