@@ -138,6 +138,21 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     searchedList.sort((a, b) => (b["date"][0]).compareTo(a["date"][0]));
   }
 
+  _sortGreens() {
+    List<dynamic> greenList = [];
+    List<dynamic> blackList = [];
+    searchedList.forEach((value) => ({
+          if (notiArray.contains(value["docID"]))
+            {greenList.add(value)}
+          else
+            {blackList.add(value)}
+        }));
+    setState(() {
+      searchedList.clear();
+      searchedList = [...greenList, ...blackList];
+    });
+  }
+
   _loadUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print("Loading User");
@@ -252,6 +267,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     setState(() {
       prefs.setStringList("notiArray", notiArray);
       _notificationCheck(notiArray);
+      _sortGreens();
     });
   }
 
