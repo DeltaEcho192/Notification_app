@@ -203,7 +203,9 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
         resumeCallBack: () async => setState(() {
               // do something
+              getBaustelle();
               _notificationCountTesting();
+
               print("resumed State");
             })));
   }
@@ -362,13 +364,65 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _unreadAllDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sind sie sicher?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Sind Sie sicher, dass Sie alle Berichte ungelesen haben möchten?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Ya'),
+              onPressed: () {
+                _unreadAllreports();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Nein'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _unreadAllreports() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var notiRmvdWorking = (prefs.getStringList('notiRmvd') ?? []);
+    var totalRmvd = [...notiRmvdWorking, ...notiArray];
+    setState(() {
+      prefs.setStringList("notiRmvd", totalRmvd);
+      notiArray.clear();
+      prefs.setStringList("notiArray", notiArray);
+      print("Read All reports");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text("Bitte Baustelle auswählen"),
+          title: new Text("Report auswählen"),
           backgroundColor: Color.fromRGBO(232, 195, 30, 1),
           actions: [
+            IconButton(
+                icon: Icon(Icons.mark_as_unread),
+                onPressed: () {
+                  _unreadAllDialog();
+                }),
             IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () {
