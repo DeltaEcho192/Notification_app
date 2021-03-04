@@ -44,67 +44,6 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
   List<dynamic> reportApi = [];
   List<dynamic> searchedList = [];
 
-  /*List<Map> reportApi = [
-    {
-      "docID": "6CEAvn1pOu4UziwMuGD3",
-      "date": ["2020-11-26", "09:51:11.000Z"],
-      "userID": "ad",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "6GTqk2ONKcwIpkqUW5Nc",
-      "date": ["2020-11-11", "13:47:48.000Z"],
-      "userID": "jd",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "7Mkz2RVcYCysOegOm0uo",
-      "date": ["2020-11-10", "11:00:00.000Z"],
-      "userID": "jd", 
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "CwLREV01arFFbcimEnNj",
-      "date": ["2020-11-12", "09:19:15.000Z"],
-      "userID": "jd",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    }
-  ];
-  List<Map> searchedList = [
-    {
-      "docID": "6CEAvn1pOu4UziwMuGD3",
-      "date": ["2020-11-26", "09:51:11.000Z"],
-      "userID": "ad",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "6GTqk2ONKcwIpkqUW5Nc",
-      "date": ["2020-11-11", "13:47:48.000Z"],
-      "userID": "jd",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "7Mkz2RVcYCysOegOm0uo",
-      "date": ["2020-11-10", "11:00:00.000Z"],
-      "userID": "jd",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-    {
-      "docID": "CwLREV01arFFbcimEnNj",
-      "date": ["2020-11-12", "09:19:15.000Z"],
-      "userID": "jd",
-      "bauID": "2",
-      "bauName": "Zürich-9221"
-    },
-  ];
-  */
   InfoSource dataClass = InfoSource();
   var usr = "";
   var notiCount = 0;
@@ -180,16 +119,46 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
     var urlLocal = "https://" + host + ":" + port + '/updateToken/';
     print(urlLocal);
     print(jsonEncode({"userid": usr, "token": token}));
-    final check = await http.post(urlLocal,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({"userid": usr, "token": token}));
-
-    if (check.statusCode == 201) {
-      print("User token updated");
+    if (token == null) {
+      print("Token can not be null");
     } else {
-      throw Exception('Failed to update user token');
+      final check = await http.post(urlLocal,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({"userid": usr, "token": token}));
+
+      if (check.statusCode == 201) {
+        print("User token updated");
+      } else {
+        throw Exception('Failed to update user token');
+      }
+    }
+  }
+
+  Future<void> _tokenLogout() async {
+    var token = await notificationInit.init();
+    print(token);
+    await GlobalConfiguration().loadFromAsset("app_settings");
+    var host = GlobalConfiguration().getValue("host");
+    var port = GlobalConfiguration().getValue("port");
+    var urlLocal = "https://" + host + ":" + port + '/tokenLogout/';
+    print(urlLocal);
+    print(jsonEncode({"userid": usr, "token": token}));
+    if (token == null) {
+      print("Token can not be null");
+    } else {
+      final check = await http.post(urlLocal,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({"userid": usr, "token": token}));
+
+      if (check.statusCode == 201) {
+        print("User token Logged out");
+      } else {
+        throw Exception('Failed to logout user token');
+      }
     }
   }
 
@@ -235,6 +204,8 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
   }
 
   _notificationCheck(List<String> notiArrayLocal) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var badgeInit = prefs.getBool('badgeInit') ?? false;
     if (badgeInit == false) {
       var check = await FlutterAppBadger.isAppBadgeSupported();
       if (check == true) {
@@ -247,6 +218,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
       } else {
         _badgeFalseDialog();
       }
+      prefs.setBool("badgeInit", true);
     } else {
       setState(() {
         FlutterAppBadger.updateBadgeCount(notiArrayLocal.length);
@@ -381,7 +353,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Ya'),
+              child: Text('Ja'),
               onPressed: () {
                 _unreadAllreports();
                 Navigator.of(context).pop();
@@ -408,6 +380,8 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
       notiArray.clear();
       prefs.setStringList("notiArray", notiArray);
       print("Read All reports");
+      getBaustelle();
+      _notificationCountTesting();
     });
   }
 
@@ -498,6 +472,7 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
           backgroundColor: Color.fromRGBO(232, 195, 30, 1),
           onPressed: () {
             _logout();
+            _tokenLogout();
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => (LoginKey())));
           },
