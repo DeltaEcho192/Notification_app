@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vanoli_notification/login/loginKey.dart';
@@ -322,30 +323,8 @@ class _ReportState extends State<Report> with WidgetsBindingObserver {
   }
 
   Future<void> _badgeFalseDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('System incompatible'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('This android phone is incompatible with app badges'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Okay'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    Toast.show("This device is not compatible with app badges", context,
+        duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
   }
 
   Future<void> _unreadAllDialog() async {
