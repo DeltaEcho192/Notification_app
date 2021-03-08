@@ -23,38 +23,66 @@ class PushNotificationsManager {
       _firebaseMessaging.requestNotificationPermissions();
 
       _firebaseMessaging.configure(
-        onMessage: (message) async {},
-        onResume: (message) async {
-          print("Onresume Notificaiton Handler");
-          Map notiData = await _handleNotification(message);
-          InfoSource dataClass = new InfoSource();
-          print(notiData);
-          //var data = message['data'] ?? message;
-          if (notiData["date"] is String) {
-            print("date is string");
-          } else {
-            print("date is not a string");
-          }
+          onBackgroundMessage: _firebaseMessagingBackgroundHandler,
+          onMessage: (message) async {},
+          onResume: (message) async {
+            print("Onresume Notificaiton Handler");
+            Map notiData = await _handleNotification(message);
+            InfoSource dataClass = new InfoSource();
+            print(notiData);
+            //var data = message['data'] ?? message;
+            if (notiData["date"] is String) {
+              print("date is string");
+            } else {
+              print("date is not a string");
+            }
 
-          dataClass.bauID = notiData["bauID"];
-          dataClass.bauName = notiData["bauName"];
-          dataClass.date = [notiData["date"], "11:00:00.000Z"];
-          dataClass.docID = notiData["docID"];
-          dataClass.userID = notiData["userID"];
+            dataClass.bauID = notiData["bauID"];
+            dataClass.bauName = notiData["bauName"];
+            dataClass.date = [notiData["date"], "11:00:00.000Z"];
+            dataClass.docID = notiData["docID"];
+            dataClass.userID = notiData["userID"];
 
-          /*
+            /*
           dataClass.bauID = "6";
           dataClass.bauName = "VKS-NB Industriehalle Bassersdorf";
           dataClass.date = ["2020-11-24", "10:41:49.000Z"];
           dataClass.docID = "R0LIzEYcyef4XYwsQOD6";
           dataClass.userID = "milenkomilovanovic";
           */
-          print(dataClass);
-          navigatorKey.currentState.push(MaterialPageRoute(
-              builder: (context) => (CheckboxWidget(reportData: dataClass))));
-        },
-      );
+            print(dataClass);
+            navigatorKey.currentState.push(MaterialPageRoute(
+                builder: (context) => (CheckboxWidget(reportData: dataClass))));
+          },
+          onLaunch: (message) async {
+            print("onLaunch Notificaiton Handler");
+            Map notiData = await _handleNotification(message);
+            InfoSource dataClass = new InfoSource();
+            print(notiData);
+            //var data = message['data'] ?? message;
+            if (notiData["date"] is String) {
+              print("date is string");
+            } else {
+              print("date is not a string");
+            }
 
+            dataClass.bauID = notiData["bauID"];
+            dataClass.bauName = notiData["bauName"];
+            dataClass.date = [notiData["date"], "11:00:00.000Z"];
+            dataClass.docID = notiData["docID"];
+            dataClass.userID = notiData["userID"];
+
+            /*
+          dataClass.bauID = "6";
+          dataClass.bauName = "VKS-NB Industriehalle Bassersdorf";
+          dataClass.date = ["2020-11-24", "10:41:49.000Z"];
+          dataClass.docID = "R0LIzEYcyef4XYwsQOD6";
+          dataClass.userID = "milenkomilovanovic";
+          */
+            print(dataClass);
+            navigatorKey.currentState.push(MaterialPageRoute(
+                builder: (context) => (CheckboxWidget(reportData: dataClass))));
+          });
       // For testing purposes print the Firebase Messaging token
       String token = await _firebaseMessaging.getToken();
       print("FirebaseMessaging token: $token");
@@ -79,4 +107,50 @@ class PushNotificationsManager {
     notiData["userID"] = data["userID"];
     return notiData;
   }
+}
+
+Future<dynamic> androidNotificationHandler(Map<String, dynamic> message) async {
+  print("Android Handling Notification");
+  print(message);
+  var navigatorKey = SfcKeys.navKey;
+  var notiData = {};
+  var data = message['data'] ?? message;
+  print(data["bauID"]);
+  print(data["bauName"]);
+  print(data["date"]);
+  print(data["docID"]);
+  print(data["userID"]);
+
+  notiData["bauID"] = data["bauID"];
+  notiData["bauName"] = data["bauName"];
+  notiData["date"] = data["date"];
+  notiData["docID"] = data["docID"];
+  notiData["userID"] = data["userID"];
+
+  InfoSource dataClass = new InfoSource();
+  print(notiData);
+  //var data = message['data'] ?? message;
+  if (notiData["date"] is String) {
+    print("date is string");
+  } else {
+    print("date is not a string");
+  }
+
+  dataClass.bauID = notiData["bauID"];
+  dataClass.bauName = notiData["bauName"];
+  dataClass.date = [notiData["date"], "11:00:00.000Z"];
+  dataClass.docID = notiData["docID"];
+  dataClass.userID = notiData["userID"];
+
+  print(dataClass);
+  navigatorKey.currentState.push(MaterialPageRoute(
+      builder: (context) => (CheckboxWidget(reportData: dataClass))));
+}
+
+Future<dynamic> _firebaseMessagingBackgroundHandler(
+  Map<String, dynamic> message,
+) async {
+  // Initialize the Firebase app
+
+  print('onBackgroundMessage received: $message');
 }
