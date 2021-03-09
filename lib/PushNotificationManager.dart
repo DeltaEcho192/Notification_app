@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'checklist.dart';
 import 'infoSource.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,10 @@ class PushNotificationsManager {
           dataClass.docID = "R0LIzEYcyef4XYwsQOD6";
           dataClass.userID = "milenkomilovanovic";
           */
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            List<String> rmvd = (prefs.getStringList("notiRmvd") ?? []);
+            rmvd.add(notiData["docID"]);
+            prefs.setStringList("notiRmvd", rmvd);
             print(dataClass);
             navigatorKey.currentState.push(MaterialPageRoute(
                 builder: (context) => (CheckboxWidget(reportData: dataClass))));
@@ -79,6 +84,10 @@ class PushNotificationsManager {
           dataClass.docID = "R0LIzEYcyef4XYwsQOD6";
           dataClass.userID = "milenkomilovanovic";
           */
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            List<String> rmvd = (prefs.getStringList("notiRmvd") ?? []);
+            rmvd.add(notiData["docID"]);
+            prefs.setStringList("notiRmvd", rmvd);
             print(dataClass);
             navigatorKey.currentState.push(MaterialPageRoute(
                 builder: (context) => (CheckboxWidget(reportData: dataClass))));
