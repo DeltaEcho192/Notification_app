@@ -54,6 +54,7 @@ class _DialogState extends State<DialogScreen> {
   StorageUploadTask _deleteTask;
   var txt = TextEditingController();
   var statusRes = TextEditingController();
+  var statusUsr = TextEditingController();
   String baustelle;
   final bauController = TextEditingController(text: "Baustelle");
   var subtController = TextEditingController();
@@ -337,7 +338,8 @@ class _DialogState extends State<DialogScreen> {
 
   //
   //
-
+  bool statusFlagB = false;
+  var genString;
   _loadStatusMessage() {
     if (widget.dialogdata.statusText != "") {
       var genString = "Erledigt Von " +
@@ -347,8 +349,135 @@ class _DialogState extends State<DialogScreen> {
               0, (widget.dialogdata.statusTime.toString().length - 7)) +
           ")\n";
       statusRes.text = genString + widget.dialogdata.statusText;
+      statusUsr.text = widget.dialogdata.statusText;
     } else {
       statusRes.text = "";
+      statusUsr.text = "";
+    }
+    print("Status type: ");
+    print(widget.dialogdata.status);
+    if (widget.dialogdata.status == 1) {
+      statusFlag = widget.dialogdata.status;
+      statusFlagB = true;
+    }
+  }
+
+  Future<void> _statusMessageDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter Status Message?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                new TextField(
+                  controller: statusUsr,
+                  minLines: 3,
+                  maxLines: 3,
+                  readOnly: false,
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: () {
+                _statusUpload(statusUsr.text);
+                _changeAlertStatus(
+                    widget.dialogdata.docID, widget.dialogdata.name);
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _reWriteComment(var user, DateTime time, var text) {
+    var genString = "Erledigt Von " +
+        user +
+        " am (" +
+        time.toString().substring(0, (time.toString().length - 7)) +
+        ")\n";
+    statusRes.text = genString + text;
+  }
+
+  int statusFlag = 0;
+  var usr;
+  Future<void> _statusUpload(var statusText) async {
+    var host = GlobalConfiguration().getValue("host");
+    var port = GlobalConfiguration().getValue("mobilePort");
+    var urlLocal = "https://" + host + ":" + port + '/statusUpload/';
+    print(urlLocal);
+    print(statusText);
+    Map<String, dynamic> statusData = {};
+    statusData["text"] = statusText;
+    statusData["key"] = widget.dialogdata.name;
+    statusData["user"] = usr;
+    statusData["docID"] = widget.dialogdata.docID;
+    statusData["status"] = statusFlag;
+    statusData["time"] = DateTime.now().millisecondsSinceEpoch;
+    print(statusData);
+    _reWriteComment(usr, DateTime.now(), statusText);
+
+    final check = await http.post(urlLocal,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(statusData));
+
+    if (check.statusCode == 201) {
+      print("Status update is successful");
+    } else {
+      print("There has been an issue with updating status message");
+    }
+  }
+
+  _loadUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("Loading User");
+    print(prefs.getString('user') ?? "empty");
+    setState(() {
+      usr = (prefs.getString('user') ?? "empty");
+    });
+  }
+
+  Future<void> _changeAlertStatus(var docID, var key) async {
+    var host = GlobalConfiguration().getValue("host");
+    var port = GlobalConfiguration().getValue("mobilePort");
+    var urlLocal = "https://" + host + ":" + port + '/statusChangeAlert/';
+
+    var alertData = {};
+    alertData["docID"] = docID;
+    alertData["key"] = key;
+
+    print(alertData.toString() + " :alertData");
+
+    final check = await http.post(urlLocal,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(alertData));
+
+    if (check.statusCode == 201) {
+      print("Status update is successful");
+    } else {
+      print("There has been an issue with updating status message");
     }
   }
 
@@ -357,6 +486,7 @@ class _DialogState extends State<DialogScreen> {
     super.initState();
     txt.text = widget.dialogdata.text;
     _loadStatusMessage();
+    _loadUser();
     print(widget.dialogdata.image2);
     _iconCheck();
     audioCheck();
@@ -457,6 +587,35 @@ class _DialogState extends State<DialogScreen> {
                           audioLoad(widget.dialogdata.audio);
                         }
                       }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Fertig?"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Checkbox(
+                    value: statusFlagB,
+                    onChanged: (bool value) {
+                      setState(() {
+                        if (value == true) {
+                          statusFlag = 1;
+                        } else {
+                          statusFlag = 0;
+                        }
+                        statusFlagB = value;
+                      });
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: IconButton(
+                    icon: Icon(Icons.history_edu),
+                    onPressed: () {
+                      _statusMessageDialog();
+                    },
+                  ),
                 )
               ]),
           new Row(
@@ -467,7 +626,7 @@ class _DialogState extends State<DialogScreen> {
                 controller: statusRes,
                 minLines: 3,
                 maxLines: 3,
-                readOnly: true,
+                readOnly: false,
                 decoration: const InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),

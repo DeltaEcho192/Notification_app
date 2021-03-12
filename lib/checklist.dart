@@ -393,6 +393,8 @@ class CheckboxWidgetState extends State<CheckboxWidget> {
                       dialogData.image2 = names[(key + "Sec")];
                       dialogData.audio = audio[key];
                       dialogData.priority = priority[key];
+                      dialogData.docID = widget.reportData.docID;
+                      dialogData.status = status[key];
                       if (statusText.isNotEmpty) {
                         if (statusText[key] != null) {
                           var check = statusText[key]['text'];

@@ -9,6 +9,9 @@ class DialogData {
   String statusText;
   String statusUser;
   DateTime statusTime;
+  String docID;
+  int status;
+
 
   DialogData(
       {this.text,
@@ -20,5 +23,7 @@ class DialogData {
       this.name,
       this.statusText,
       this.statusTime,
-      this.statusUser});
+      this.statusUser,
+      this.status,
+      this.docID});
 }
