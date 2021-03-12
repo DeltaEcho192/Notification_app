@@ -421,7 +421,7 @@ class _DialogState extends State<DialogScreen> {
   var usr;
   Future<void> _statusUpload(var statusText) async {
     var host = GlobalConfiguration().getValue("host");
-    var port = GlobalConfiguration().getValue("mobilePort");
+    var port = GlobalConfiguration().getValue("webPort");
     var urlLocal = "https://" + host + ":" + port + '/statusUpload/';
     print(urlLocal);
     print(statusText);

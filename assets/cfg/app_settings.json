@@ -1,5 +1,6 @@
 {
     "host":"report.vanoli-ag.ch",
     "port":"16000",
-    "mobilePort": "9000"
+    "webPort": "9000",
+    "mobilePort":"10201"
 }
